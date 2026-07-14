@@ -10,8 +10,10 @@ import os
 
 # Function to load data (reusing the one from the notebook)
 @st.cache_data
+@st.cache_data
 def load_data(file_path):
     """Load the dataset with optimized data types"""
+
     dtype = {
         'user_id': 'int32',
         'course_id': 'int32',
@@ -23,7 +25,9 @@ def load_data(file_path):
         'rating': 'float32',
         'enrollment_numbers': 'int32'
     }
-      df = pd.read_csv(file_path, dtype=dtype)
+
+    df = pd.read_csv(file_path, dtype=dtype)
+
     return df
 
 # Function to clean data (reusing the one from the notebook)
