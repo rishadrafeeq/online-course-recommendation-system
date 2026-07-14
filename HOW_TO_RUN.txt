@@ -1,31 +1,33 @@
 ONLINE COURSE RECOMMENDATION SYSTEM
 
-Requirements
-------------
-Python 3.11
+Requirements:
+- Python 3.11 or above
 
-Install dependencies
+Installation:
+
+1. Clone the repository
+
+git clone https://github.com/YOUR_USERNAME/online-course-recommendation-system.git
+
+2. Move to project folder
+
+cd online-course-recommendation-system
+
+3. Install dependencies
 
 pip install -r requirements.txt
 
-Run the Streamlit application
+4. Run the application
 
 streamlit run online_course_dep.py
 
-The application will open automatically in your browser.
-
-If it doesn't open, visit:
+5. Open browser
 
 http://localhost:8501
 
-Project Files
--------------
+Live Demo:
 
-online_course_dep.py
-online_course_recommendation.ipynb
-online_course_recommendation_v2.csv
-requirements.txt
+https://online-course-recommendation-system-sx5hyz9fgxokkcejlsdbvh.streamlit.app/
 
-Author
-
+Author:
 Muhammed Rishad
