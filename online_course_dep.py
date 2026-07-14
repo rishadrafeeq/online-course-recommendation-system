@@ -23,7 +23,7 @@ def load_data(file_path):
         'rating': 'float32',
         'enrollment_numbers': 'int32'
     }
-    df = pd.read_csv(data_path, dtype=dtype)
+      df = pd.read_csv(file_path, dtype=dtype)
     return df
 
 # Function to clean data (reusing the one from the notebook)
@@ -52,49 +52,51 @@ def train_svd_model(df):
 # Function to get SVD recommendations (reusing the one from the notebook and adapting for Streamlit)
 def svd_recommendations(model, trainset, df, user_id, n=5):
     """Generate recommendations using SVD"""
+
     try:
-        user_inner_id = trainset.to_inner_uid(user_id)
+        trainset.to_inner_uid(user_id)
     except ValueError:
-        # Handle new users not in the training set by recommending popular courses
         st.warning(f"User ID {user_id} not found in training data. Recommending popular courses.")
         return get_popular_courses(df, n)
 
-    # Get raw course IDs from the dataset
-    all_course_ids = df['course_id'].unique()
+    # All courses
+    all_course_ids = df["course_id"].unique()
 
-    # Get courses user has already taken (using original df for simplicity)
-    user_courses = df[df['user_id'] == user_id]['course_id'].unique()
+    # Courses already taken
+    user_courses = df[df["user_id"] == user_id]["course_id"].unique()
 
-    # Predict ratings for courses not taken
+    # Predict ratings
     predictions = []
+
     for course_id in all_course_ids:
         if course_id not in user_courses:
-            # Use the raw IDs for prediction with the model trained on raw IDs
             pred = model.predict(user_id, course_id)
             predictions.append((course_id, pred.est))
 
     # Sort by predicted rating
     predictions.sort(key=lambda x: x[1], reverse=True)
 
-    # Get top n recommendations
+    # Top N course ids
     top_course_ids = [x[0] for x in predictions[:n]]
 
-    # Return course details
+    # One row per course
     recommendations = (
-    df[df['course_id'].isin(top_course_ids)]
-    [['course_id', 'course_name', 'instructor', 'rating']]
-    .drop_duplicates(subset=['course_id'])
-)
+        df[df["course_id"].isin(top_course_ids)]
+        .sort_values("rating", ascending=False)
+        .drop_duplicates(subset="course_id")
+        [["course_id", "course_name", "instructor", "rating"]]
+    )
 
-recommendations['course_id'] = pd.Categorical(
-    recommendations['course_id'],
-    categories=top_course_ids,
-    ordered=True
-)
+    # Preserve prediction order
+    recommendations["course_id"] = pd.Categorical(
+        recommendations["course_id"],
+        categories=top_course_ids,
+        ordered=True,
+    )
 
-recommendations = recommendations.sort_values('course_id')
+    recommendations = recommendations.sort_values("course_id")
 
-return recommendations.head(n)
+    return recommendations.reset_index(drop=True)
 
 # Function to get popular courses (reusing the one from the notebook)
 def get_popular_courses(df, n=5):
