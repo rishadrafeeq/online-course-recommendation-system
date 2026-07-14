@@ -80,7 +80,21 @@ def svd_recommendations(model, trainset, df, user_id, n=5):
     top_course_ids = [x[0] for x in predictions[:n]]
 
     # Return course details
-    return df[df['course_id'].isin(top_course_ids)][['course_id', 'course_name', 'instructor', 'rating']].drop_duplicates()
+    recommendations = (
+    df[df['course_id'].isin(top_course_ids)]
+    [['course_id', 'course_name', 'instructor', 'rating']]
+    .drop_duplicates(subset=['course_id'])
+)
+
+recommendations['course_id'] = pd.Categorical(
+    recommendations['course_id'],
+    categories=top_course_ids,
+    ordered=True
+)
+
+recommendations = recommendations.sort_values('course_id')
+
+return recommendations.head(n)
 
 # Function to get popular courses (reusing the one from the notebook)
 def get_popular_courses(df, n=5):
